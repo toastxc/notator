@@ -1,0 +1,14 @@
+{
+  "apps": {
+    "http": {
+      "servers": {
+        "example": {
+          "listen": [
+            ":80"
+          ],
+          "routes": []
+        }
+      }
+    }
+  }
+}
