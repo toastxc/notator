@@ -257,5 +257,7 @@ async fn note_delete(index: usize) -> Result<(), ServerFnError> {
 
 
 fn main() {
+    #[cfg(not(feature = "server"))]
+    server_fn::client::set_server_url("https://test.toastxc.xyz");
     dioxus::launch(app);
 }
