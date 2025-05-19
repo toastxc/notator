@@ -201,10 +201,10 @@ use tokio::sync::RwLock;
 #[cfg(feature = "server")]
 lazy_static! {
     /// This is an example for using doc comment attributes
-
-
     static ref DB: Arc<RwLock<Db>> = Arc::new(RwLock::new(serde_json::from_slice(&std::fs::read(DB_PATH).unwrap()).unwrap()));
 }
+
+
 
 // fn(&T) -> bool
 fn default<T: Default + std::cmp::PartialEq>(i: &T) -> bool {
@@ -222,14 +222,19 @@ pub struct Note {
 }
 
 // CRUD
-#[server]
+#[server(endpoint = "note_add")]
 async fn note_add() -> Result<(), ServerFnError> {
     DB.write().await.notes.push(Default::default());
     DB.read().await.save();
     Ok(())
 }
 
-#[server]
+#[server(endpoint = "server_valid")]
+async fn server_valid() -> Result<String, ServerFnError> {
+    Ok("hello! :D".to_string())
+}
+
+#[server(endpoint = "note_update")]
 async fn note_update(index: usize, note: Note) -> Result<(), ServerFnError> {
     // check if note exists
     if DB.read().await.notes.get(index).is_none() {
@@ -242,12 +247,13 @@ async fn note_update(index: usize, note: Note) -> Result<(), ServerFnError> {
     Ok(())
 }
 
-#[server]
+
+#[server(endpoint = "notes_read")]
 async fn notes_read() -> Result<Vec<Note>, ServerFnError> {
     Ok(DB.read().await.notes.clone())
 }
 
-#[server]
+#[server(endpoint = "note_delete")]
 async fn note_delete(index: usize) -> Result<(), ServerFnError> {
     DB.write().await.notes.remove(index);
     DB.read().await.save();
