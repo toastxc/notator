@@ -250,6 +250,7 @@ async fn note_update(index: usize, note: Note) -> Result<(), ServerFnError> {
 
 #[server(endpoint = "notes_read")]
 async fn notes_read() -> Result<Vec<Note>, ServerFnError> {
+    println!("ping!");
     Ok(DB.read().await.notes.clone())
 }
 
@@ -265,5 +266,6 @@ async fn note_delete(index: usize) -> Result<(), ServerFnError> {
 fn main() {
     #[cfg(not(feature = "server"))]
     server_fn::client::set_server_url("https://test.toastxc.xyz");
+
     dioxus::launch(app);
 }
