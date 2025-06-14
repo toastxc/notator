@@ -8,3 +8,4 @@ Cargo.lock
 **/*.rs.bk
 /.idea
 *.json
+db.json

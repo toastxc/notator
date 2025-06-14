@@ -123,7 +123,7 @@ fn NoteItem(index: usize, modal_open: Signal<Option<usize>>, notes: Signal<Vec<N
 
 
                     button {
-                        class: "delete is-large column",
+                        class: "delete    is-large column",
                         onclick: move |_| async move {
                             note_delete(index).await;
                             notes.write().remove(index);
@@ -134,8 +134,8 @@ fn NoteItem(index: usize, modal_open: Signal<Option<usize>>, notes: Signal<Vec<N
         }
     }
 }
-
-fn app() -> Element {
+// #[component]
+fn Home() -> Element {
     // let global_error = use_signal(||None);
 
     let mut modal_open = use_signal(|| None);
@@ -155,10 +155,16 @@ fn app() -> Element {
         }
     });
 
+
+
+
+
     rsx! {
         document::Stylesheet { href: CSS }
 
         br {}
+
+
 
         if modal_open().is_some() {
             NoteModal { modal_open, notes }
@@ -167,7 +173,7 @@ fn app() -> Element {
         {items_rendered}
 
         a {
-            class: "button  is-large is-fullwidth",
+            class: "button is-large is-fullwidth",
             onclick: move |_| async move {
                 notes.write().push(Default::default());
                 note_add().await;
@@ -195,6 +201,8 @@ impl Db {
 use lazy_static::lazy_static;
 #[cfg(feature = "server")]
 use std::sync::Arc;
+
+
 #[cfg(feature = "server")]
 use tokio::sync::RwLock;
 
@@ -203,8 +211,6 @@ lazy_static! {
     /// This is an example for using doc comment attributes
     static ref DB: Arc<RwLock<Db>> = Arc::new(RwLock::new(serde_json::from_slice(&std::fs::read(DB_PATH).unwrap()).unwrap()));
 }
-
-
 
 // fn(&T) -> bool
 fn default<T: Default + std::cmp::PartialEq>(i: &T) -> bool {
@@ -247,7 +253,6 @@ async fn note_update(index: usize, note: Note) -> Result<(), ServerFnError> {
     Ok(())
 }
 
-
 #[server(endpoint = "notes_read")]
 async fn notes_read() -> Result<Vec<Note>, ServerFnError> {
     println!("ping!");
@@ -262,10 +267,21 @@ async fn note_delete(index: usize) -> Result<(), ServerFnError> {
 }
 
 
+#[component]
+fn PageNotFound(route: Vec<String>) -> Element {
+    rsx! {
+        h1 { "Page not found" }
+        p { "We are terribly sorry, but the page you requested doesn't exist." }
+        pre { color: "red", "log:\nattemped to navigate to: {route:?}" }
+    }
+}
 
+use dioxus::prelude::*;
+use dioxus_router::prelude::*;
 fn main() {
-    #[cfg(not(feature = "server"))]
-    server_fn::client::set_server_url("https://test.toastxc.xyz");
 
-    dioxus::launch(app);
+
+
+
+    dioxus::launch(Home);
 }
